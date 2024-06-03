@@ -9,3 +9,38 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Status {
+  AVAILABLE
+  TAKEN
+}
+
+enum Experience {
+  JR
+  MID
+  SR
+}
+
+model Vacancy {
+  id                                  String     @id @default(uuid())
+  vacancy_name                        String
+  main_tech                           String
+  experience_required_for_main_tech   Int
+  second_tech                         String
+  experience_required_for_second_tech Int
+  experience_level                    Experience
+  vacancy_status                      Status
+  sale_rate                           Int
+  client                              Client?    @relation(fields: [client_id], references: [id])
+  client_id                           String     @unique
+  start_date                          DateTime
+  created_at                          DateTime   @default(now()) @db.DateTime
+  updated_at                          DateTime   @db.DateTime
+}
+
+model Client {
+  id      String    @id @default(uuid())
+  name    String
+  phone   String
+  Vacancy Vacancy[]
+}
