@@ -13,6 +13,7 @@ datasource db {
 enum Status {
   AVAILABLE
   TAKEN
+  IN_PROCESS
 }
 
 enum Experience {
@@ -42,5 +43,5 @@ model Client {
   id      String    @id @default(uuid())
   name    String
   phone   String
-  Vacancy Vacancy[]
+  Vacancies Vacancy[]
 }
