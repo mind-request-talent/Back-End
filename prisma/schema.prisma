@@ -35,8 +35,8 @@ model Vacancy {
   client                              Client?    @relation(fields: [client_id], references: [id])
   client_id                           String     @unique
   start_date                          DateTime
-  created_at                          DateTime   @default(now()) @db.DateTime
-  updated_at                          DateTime   @db.DateTime
+  created_at                          DateTime   @default(now()) 
+  updated_at                          DateTime   
 }
 
 model Client {
