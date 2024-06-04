@@ -17,8 +17,8 @@ export async function create_user(req, res) {
 }
 
 export async function allUsers(req, res) {
-    const { skip, take } = req.params
-    if (!skip) skip = 1
+    let { skip, take } = req.params
+    if (!skip) skip = 0
     if (!take) take = 10
     const users = await prisma.user.findMany({ skip, take });
     if (!users || users.length === 0) return res.status(404).send('No users found');
