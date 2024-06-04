@@ -1,12 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient();
 
 export async function create_user(req, res) {
-    const { name, permissions } = req.body;
+    const { name, email, password, permissions } = req.body;
+    const salt = bcrypt.genSaltSync(12);
+    const hash = bcrypt.hashSync(password, salt);
+
     const newUser = await prisma.user.create({
         data: {
             name,
+            email,
+            hash,
             permissions
         },
     });
@@ -20,6 +26,7 @@ export async function allUsers(req, res) {
     let { skip, take } = req.params
     if (!skip) skip = 0
     if (!take) take = 10
+
     const users = await prisma.user.findMany({ skip, take });
     if (!users || users.length === 0) return res.status(404).send('No users found');
 
@@ -58,4 +65,28 @@ export async function deleteUser(req, res) {
         where: { id }
     });
     if (!user) return res.send('Ese usuario no existe');
+}
+
+export async function login(req, res) {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (!user) throw new Error('Usuario o contraseña incorrecta');
+
+    const storedPass = user.password;
+
+    const login = bcrypt.compareSync(password, storedPass);
+
+    if (!login) throw new Error('Usuario o contraseña incorrecta');
+
+    return res.status(200).json({
+        message: `Bienvenido ${user.name}`,
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        }
+    });
 }
