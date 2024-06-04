@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-export async function create_user(req, res) {
+export async function createUser(req, res) {
     const { name, email, password, permissions } = req.body;
     const salt = bcrypt.genSaltSync(12);
     const hash = bcrypt.hashSync(password, salt);
@@ -17,15 +17,15 @@ export async function create_user(req, res) {
         },
     });
 
-    if (!newUser) throw new Error('No se pudo crear el usuario')
+    if (!newUser) throw new Error('No se pudo crear el usuario');
 
     return res.json(newUser);
 }
 
 export async function allUsers(req, res) {
-    let { skip, take } = req.params
-    if (!skip) skip = 0
-    if (!take) take = 10
+    let { skip, take } = req.params;
+    if (!skip) skip = 0;
+    if (!take) take = 10;
 
     const users = await prisma.user.findMany({ skip, take });
     if (!users || users.length === 0) return res.status(404).send('No users found');
@@ -35,7 +35,7 @@ export async function allUsers(req, res) {
 }
 
 export async function userById(req, res) {
-    const { id } = req.params
+    const { id } = req.params;
     const user = await prisma.user.findUnique({
         where: { id }
     });
@@ -45,8 +45,8 @@ export async function userById(req, res) {
 }
 
 export async function updateUser(req, res) {
-    const { id } = req.params
-    const { changes } = req.body
+    const { id } = req.params;
+    const { changes } = req.body;
     const updatedUser = await prisma.user.update({
         where: { id },
         data: {
@@ -54,7 +54,7 @@ export async function updateUser(req, res) {
         }
     });
 
-    if (!updatedUser) throw new Error('No se pudo actualizar el usuario')
+    if (!updatedUser) throw new Error('No se pudo actualizar el usuario');
 
     return res.status(200).json(updatedUser);
 }
