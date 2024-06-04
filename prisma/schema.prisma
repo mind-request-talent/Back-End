@@ -10,6 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Permissions {
+  DELIVERY
+  RECRUITMENT
+}
+
+enum Role {
+  PO
+  SM
+  TL
+  Dev
+  QA
+  DevOps
+  UIUX
+}
+
 enum Status {
   AVAILABLE
   TAKEN
@@ -22,6 +37,12 @@ enum Experience {
   SR
 }
 
+model User {
+  id          String      @id @default(uuid())
+  name        String
+  permissions Permissions
+}
+
 model Vacancy {
   id                                  String     @id @default(uuid())
   vacancy_name                        String
@@ -31,17 +52,18 @@ model Vacancy {
   experience_required_for_second_tech Int
   experience_level                    Experience
   vacancy_status                      Status
+  role                                Role
   sale_rate                           Int
   client                              Client?    @relation(fields: [client_id], references: [id])
   client_id                           String     @unique
   start_date                          DateTime
-  created_at                          DateTime   @default(now()) 
-  updated_at                          DateTime   
+  created_at                          DateTime   @default(now())
+  updated_at                          DateTime
 }
 
 model Client {
-  id      String    @id @default(uuid())
-  name    String
-  phone   String
+  id        String    @id @default(uuid())
+  name      String
+  phone     String
   Vacancies Vacancy[]
 }
