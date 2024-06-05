@@ -12,7 +12,7 @@ export async function createUser(req, res) {
         data: {
             name,
             email,
-            hash,
+            password: hash,
             permissions
         },
     });
