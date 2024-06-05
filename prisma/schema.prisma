@@ -60,7 +60,7 @@ model Vacancy {
   client_id                           String     @unique
   start_date                          DateTime
   created_at                          DateTime   @default(now())
-  updated_at                          DateTime
+  updated_at                          DateTime   @updatedAt
 }
 
 model Client {
