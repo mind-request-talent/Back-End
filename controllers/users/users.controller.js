@@ -12,12 +12,12 @@ export async function createUser(req, res) {
         data: {
             name,
             email,
-            hash,
+            password: hash,
             permissions
         },
     });
 
-    if (!newUser) throw new Error('No se pudo crear el usuario');
+    if (!newUser) return res.send('No se pudo crear el cliente');
 
     return res.json(newUser);
 }
@@ -28,7 +28,7 @@ export async function allUsers(req, res) {
     if (!take) take = 10;
 
     const users = await prisma.user.findMany({ skip, take });
-    if (!users || users.length === 0) return res.status(404).send('No users found');
+    if (!users || users.length === 0) return res.status(404).send('No se encontraron usuarios');
 
     return res.status(200).json(users);
 
@@ -46,7 +46,7 @@ export async function userById(req, res) {
 
 export async function updateUser(req, res) {
     const { id } = req.params;
-    const { changes } = req.body;
+    const changes = req.body;
     const updatedUser = await prisma.user.update({
         where: { id },
         data: {
@@ -54,7 +54,7 @@ export async function updateUser(req, res) {
         }
     });
 
-    if (!updatedUser) throw new Error('No se pudo actualizar el usuario');
+    if (!updatedUser) return res.send('No se pudo actualizar el usuario');
 
     return res.status(200).json(updatedUser);
 }
@@ -65,6 +65,10 @@ export async function deleteUser(req, res) {
         where: { id }
     });
     if (!user) return res.send('Ese usuario no existe');
+
+    await prisma.user.delete({
+        where: { id }
+    });
 }
 
 export async function login(req, res) {
