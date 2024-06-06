@@ -13,6 +13,7 @@ export async function createVacancy(req, res) {
         vacancy_status,
         role,
         sale_rate,
+        notes,
         client_id,
         start_date
     } = req.body;
@@ -34,6 +35,7 @@ export async function createVacancy(req, res) {
                 vacancy_status,
                 role,
                 sale_rate,
+                notes,
                 start_date: new Date(start_date)
             }
 

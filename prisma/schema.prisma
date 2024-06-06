@@ -56,8 +56,9 @@ model Vacancy {
   vacancy_status                      Status
   role                                Role
   sale_rate                           Int
+  notes                               String
   client                              Client     @relation(fields: [client_id], references: [id])
-  client_id                           String     
+  client_id                           String
   start_date                          DateTime
   created_at                          DateTime   @default(now())
   updated_at                          DateTime   @updatedAt
@@ -67,5 +68,6 @@ model Client {
   id        String    @id @default(uuid())
   name      String
   phone     String
+  email     String    @unique
   Vacancies Vacancy[]
 }

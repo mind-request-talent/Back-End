@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import bodyparser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -9,6 +10,7 @@ import vacanciesRouter from './routes/vacancies.routes.js';
 
 const app = express();
 
+app.use(cors());
 app.use(cookieParser());
 app.use(bodyparser.json());
 
