@@ -17,25 +17,41 @@ export async function createVacancy(req, res) {
         start_date
     } = req.body;
 
-    const newVacancy = await prisma.vacancy.create({
-        data: {
-            vacancy_name,
-            main_tech,
-            experience_required_for_main_tech,
-            second_tech,
-            experience_required_for_second_tech,
-            experience_level,
-            vacancy_status,
-            role,
-            sale_rate,
-            client_id,
-            start_date
-        }
-    });
+    try {
+        const newVacancy = await prisma.vacancy.create({
+            data: {
+                client: {
+                    connect: {
+                        id: client_id
+                    }
+                },
+                vacancy_name,
+                main_tech,
+                experience_required_for_main_tech,
+                second_tech,
+                experience_required_for_second_tech,
+                experience_level,
+                vacancy_status,
+                role,
+                sale_rate,
+                start_date: new Date(start_date)
+            }
 
-    if (!newVacancy) return res.send('No se pudo crear la vacante');
+        });
 
-    return res.status(200).json(newVacancy);
+        console.log(newVacancy)
+
+        if (!newVacancy) return res.send('No se pudo crear la vacante');
+
+        return res.status(200).json(newVacancy);
+
+    } catch (error) {
+
+        console.error(error.message);
+        return res.send('No se pudo crear la vacante');
+
+    }
+
 }
 
 export async function allVacancies(req, res) {
@@ -58,7 +74,10 @@ export async function vacancyById(req, res) {
     const { id } = req.params;
 
     const vacancy = await prisma.vacancy.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+            client: true
+        }
     });
 
     if (!vacancy) return res.send('No se encontró la vacante');
