@@ -8,16 +8,22 @@ export async function createUser(req, res) {
     const salt = bcrypt.genSaltSync(12);
     const hash = bcrypt.hashSync(password, salt);
 
-    const newUser = await prisma.user.create({
-        data: {
-            name,
-            email,
-            password: hash,
-            permissions
-        },
-    });
+    try {
+        const newUser = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hash,
+                permissions
+            },
+        });
 
-    if (!newUser) return res.send('No se pudo crear el cliente');
+        if (!newUser) return res.send('No se pudo crear el usuario');
+
+    } catch (error) {
+        console.error(error.message);
+        return res.send('No se pudo crear el usuario');
+    }
 
     return res.json(newUser);
 }
@@ -27,8 +33,15 @@ export async function allUsers(req, res) {
     if (!skip) skip = 0;
     if (!take) take = 10;
 
-    const users = await prisma.user.findMany({ skip, take });
-    if (!users || users.length === 0) return res.status(404).send('No se encontraron usuarios');
+    try {
+
+        const users = await prisma.user.findMany({ skip, take });
+        if (!users || users.length === 0) return res.status(404).send('No se encontraron usuarios');
+
+    } catch (error) {
+        console.error(error);
+        res.send('Ocurrió un error en la revisión')
+    }
 
     return res.status(200).json(users);
 
