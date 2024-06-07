@@ -4,12 +4,13 @@ const prisma = new PrismaClient();
 
 
 export async function createClient(req, res) {
-    const { name, phone } = req.body;
+    const { name, phone, email } = req.body;
 
     const newClient = await prisma.client.create({
         data: {
             name,
-            phone
+            phone,
+            email
         }
     });
 
