@@ -55,16 +55,17 @@ export async function createVacancy(req, res) {
 }
 
 export async function allVacancies(req, res) {
-    let { skip, take } = req.body;
+    let { skip, take, order } = req.body;
 
     if (!skip) skip = 0;
     if (!take) take = 10;
+    if (!order) order = 'desc'
 
     const vacancies = await prisma.vacancy.findMany({
         skip,
         take,
         orderBy: {
-            created_at: 'asc'
+            created_at: `${order}`
         }
     });
 
