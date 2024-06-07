@@ -50,6 +50,18 @@ export async function clientById(req, res) {
     return res.json(client);
 }
 
+export async function clientByEmail(req, res) {
+    const { email } = req.body;
+
+    const client = await prisma.client.findUnique({
+        where: { email }
+    });
+
+    if (!client) return res.send('No se encontró el cliente');
+
+    return res.json(client);
+}
+
 export async function updateClient(req, res) {
     const { id } = req.params;
     const changes = req.body;
