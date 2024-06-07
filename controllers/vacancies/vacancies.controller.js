@@ -41,8 +41,6 @@ export async function createVacancy(req, res) {
 
         });
 
-        console.log(newVacancy)
-
         if (!newVacancy) return res.send('No se pudo crear la vacante');
 
         return res.status(200).json(newVacancy);
@@ -64,7 +62,10 @@ export async function allVacancies(req, res) {
 
     const vacancies = await prisma.vacancy.findMany({
         skip,
-        take
+        take,
+        orderBy: {
+            created_at: 'asc'
+        }
     });
 
     if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
