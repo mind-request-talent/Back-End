@@ -88,19 +88,26 @@ export async function vacancyById(req, res) {
 }
 
 export async function updateVacancy(req, res) {
-    const { id } = req.params;
-    const changes = req.body;
 
-    const updatedVacancy = await prisma.vacancy.update({
-        where: { id },
-        data: {
-            changes
-        }
-    });
+    try {
 
-    if (!updatedVacancy) return res.send('No se pudo actualizar la vacante');
+        const updatedVacancy = await prisma.vacancy.update({
+            where: {
+                id: req.params.id
+            },
+            data: req.body
 
-    return res.json(updateVacancy);
+        });
+
+        if (!updatedVacancy) return res.send('No se pudo actualizar la vacante');
+
+        return res.status(200).json(updatedVacancy);
+
+    } catch (error) {
+        console.error(error.message);
+        return res.send('No se pudo actualizar la vacante');
+    }
+
 }
 
 export async function deleteVacancy(req, res) {
