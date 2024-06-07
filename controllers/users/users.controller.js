@@ -20,12 +20,13 @@ export async function createUser(req, res) {
 
         if (!newUser) return res.send('No se pudo crear el usuario');
 
+        return res.json(newUser);
+
     } catch (error) {
         console.error(error.message);
         return res.send('No se pudo crear el usuario');
     }
 
-    return res.json(newUser);
 }
 
 export async function allUsers(req, res) {
@@ -36,14 +37,16 @@ export async function allUsers(req, res) {
     try {
 
         const users = await prisma.user.findMany({ skip, take });
+
         if (!users || users.length === 0) return res.status(404).send('No se encontraron usuarios');
+
+        return res.status(200).json(users);
 
     } catch (error) {
         console.error(error);
         res.send('Ocurrió un error en la revisión')
     }
 
-    return res.status(200).json(users);
 
 }
 
