@@ -4,11 +4,12 @@ const prisma = new PrismaClient();
 
 
 export async function createClient(req, res) {
-    const { name, phone } = req.body;
+    const { name, email, phone } = req.body;
 
     const newClient = await prisma.client.create({
         data: {
             name,
+            email,
             phone
         }
     });
@@ -38,7 +39,10 @@ export async function clientById(req, res) {
     const { id } = req.params;
 
     const client = await prisma.client.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+            Vacancies: true
+        }
     });
 
     if (!client) return res.send('No se encontró al cliente');
