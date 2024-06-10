@@ -6,7 +6,7 @@ import * as clientController from '../controllers/clients/clients.controller.js'
 clientsRouter.post('', clientController.createClient);
 clientsRouter.get('', clientController.allClients);
 clientsRouter.get('/:id', clientController.clientById);
-clientsRouter.get('/byEmail', clientController.clientByEmail);
+clientsRouter.post('/byEmail', clientController.clientByEmail);
 clientsRouter.put('/:id', clientController.updateClient);
 clientsRouter.delete('/:id', clientController.deleteUser);
 
