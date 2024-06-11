@@ -10,7 +10,9 @@ import vacanciesRouter from './routes/vacancies.routes.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: ['https://front-end-210z.onrender.com']
+}));
 app.use(cookieParser());
 app.use(bodyparser.json());
 
