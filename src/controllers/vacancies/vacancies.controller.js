@@ -74,6 +74,14 @@ export async function allVacancies(req, res) {
     return res.status(200).json(vacancies);
 }
 
+export async function vacanciesSpecs(req, res) {
+    const vacancies = await prisma.vacancy.findMany();
+
+    const taken = vacancies.filter(vacancy => { return vacancy.vacancy_status = 'TAKEN' });
+
+    return res.json(taken.length);
+}
+
 export async function VacantsAvailable(req, res) {
 
     const vacancies = await prisma.vacancy.findMany({
@@ -141,7 +149,7 @@ export async function VacantsSR(req, res) {
 }
 
 export async function second_tech(req, res) {
-    const second_tech = await prisma.$queryRaw`SELECT second_tech, COUNT(*) as allCount FROM mydb.vacancy GROUP BY second_tech`;
+    const second_tech = await prisma.$queryRaw`SELECT second_tech, COUNT(*) as allCount FROM vacancy GROUP BY second_tech`;
     let previous = second_tech[0]
     for (let info of second_tech) {
         if (previous.allCount <= info.allCount) {
@@ -152,7 +160,7 @@ export async function second_tech(req, res) {
 }
 
 export async function main_tech(req, res) {
-    const mainTech = await prisma.$queryRaw`SELECT main_tech, COUNT(*) as allCount FROM mydb.vacancy GROUP BY main_tech`;
+    const mainTech = await prisma.$queryRaw`SELECT main_tech, COUNT(*) as allCount FROM vacancy GROUP BY main_tech`;
     let previous = mainTech[0]
     for (let info of mainTech) {
         if (previous.allCount <= info.allCount) {
