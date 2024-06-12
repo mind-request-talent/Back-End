@@ -75,99 +75,63 @@ export async function allVacancies(req, res) {
 }
 
 export async function vacanciesSpecs(req, res) {
-    const vacancies = await prisma.vacancy.findMany();
 
-    const taken = vacancies.filter(vacancy => { return vacancy.vacancy_status = 'TAKEN' });
+    try {
 
-    return res.json(taken.length);
-}
+        const vacancies = await prisma.vacancy.findMany({
+            select: {
+                main_tech: true,
+                second_tech: true,
+                vacancy_status: true,
+                experience_level: true,
+            }
+        });
 
-export async function VacantsAvailable(req, res) {
+        if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
 
-    const vacancies = await prisma.vacancy.findMany({
-        where: { vacancy_status: "AVAILABLE" }
-    });
+    } catch (error) {
 
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
+        console.error(error.message);
+        return res.send('Ha ocurrido un error');
 
-    return res.status(200).json(vacancies.length);
-}
-
-export async function VacantsTaken(req, res) {
-
-    const vacancies = await prisma.vacancy.findMany({
-        where: { vacancy_status: "TAKEN" }
-    });
-
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    return res.status(200).json(vacancies.length);
-}
-
-export async function VacantsInProcess(req, res) {
-
-    const vacancies = await prisma.vacancy.findMany({
-        where: { vacancy_status: "IN_PROCESS" }
-    });
-
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    return res.status(200).json(vacancies.length);
-}
-
-export async function VacantsJR(req, res) {
-
-    const vacancies = await prisma.vacancy.findMany({
-        where: { experience_level: "JR" }
-    });
-
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    return res.status(200).json(vacancies.length);
-}
-
-export async function VacantsMID(req, res) {
-
-    const vacancies = await prisma.vacancy.findMany({
-        where: { experience_level: "MID" }
-    });
-
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    return res.status(200).json(vacancies.length);
-}
-
-export async function VacantsSR(req, res) {
-
-    const vacancies = await prisma.vacancy.findMany({
-        where: { experience_level: "SR" }
-    });
-
-    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    return res.status(200).json(vacancies.length);
-}
-
-export async function second_tech(req, res) {
-    const second_tech = await prisma.$queryRaw`SELECT second_tech, COUNT(*) as allCount FROM Vacancy GROUP BY second_tech`;
-    let previous = second_tech[0]
-    for (let info of second_tech) {
-        if (previous.allCount <= info.allCount) {
-            previous = info
-        }
     }
-    return res.status(200).json(previous.second_tech);
-}
 
-export async function main_tech(req, res) {
-    const mainTech = await prisma.$queryRaw`SELECT main_tech, COUNT(*) as allCount FROM Vacancy GROUP BY main_tech`;
-    let previous = mainTech[0]
-    for (let info of mainTech) {
-        if (previous.allCount <= info.allCount) {
-            previous = info
-        }
+    const taken = vacancies.filter(vacancies => { return vacancies.vacancy_status === 'TAKEN' });
+    const available = vacancies.filter(vacancies => { return vacancies.vacancy_status === 'AVAILABLE' });
+    const inProcess = vacancies.filter(vacancies => { return vacancies.vacancy_status === 'IN_PROCESS' });
+
+    const jr = vacancies.filter(vacancies => { return vacancies.experience_level === 'JR' });
+    const mid = vacancies.filter(vacancies => { return vacancies.experience_level === 'MID' });
+    const sr = vacancies.filter(vacancies => { return vacancies.experience_level === 'SR' });
+
+    //MT stands for main tech
+    //ST stands for second tech
+    const mtCounts = {};
+    const stCounts = {};
+
+    for (let vacancy of vacancies) {
+        mtCounts[vacancy.second_tech] = (mtCounts[vacancy.second_tech] || 0) + 1;
+        stCounts[vacancy.main_tech] = (stCounts[vacancy.main_tech] || 0) + 1;
     }
-    return res.status(200).json(previous.main_tech);
+
+    const maxCountMT = Math.max(...Object.values(mtCounts));
+    const maxCountST = Math.max(...Object.values(stCounts));
+    const mostFrequentMT = Object.keys(mtCounts).find(key => mtCounts[key] === maxCountMT);
+    const mostFrequentST = Object.keys(stCounts).find(key => stCounts[key] === maxCountST);
+
+    // console.log(mostFrequentMT, maxCountMT);
+    // console.log(mostFrequentST, maxCountST);
+
+    res.status(200).json({
+        taken_vacancies: taken.length,
+        available_vacancies: available.length,
+        in_process_vacancies: inProcess.length,
+        jr_vacancies: jr.length,
+        mid_vacancies: mid.length,
+        sr_vacancies: sr.length,
+        most_frequent_main_tech: mostFrequentMT,
+        most_frequent_second_tech: mostFrequentST
+    });
 }
 
 export async function vacancyById(req, res) {
