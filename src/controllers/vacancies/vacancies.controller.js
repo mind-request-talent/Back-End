@@ -100,8 +100,8 @@ export async function vacanciesSpecs(req, res) {
     const stCounts = {};
 
     for (let vacancy of vacancies) {
-        mtCounts[vacancy.second_tech] = (mtCounts[vacancy.second_tech] || 0) + 1;
-        stCounts[vacancy.main_tech] = (stCounts[vacancy.main_tech] || 0) + 1;
+        mtCounts[vacancy.main_tech] = (mtCounts[vacancy.main_tech] || 0) + 1;
+        stCounts[vacancy.second_tech] = (stCounts[vacancy.second_tech] || 0) + 1;
     }
 
     const maxCountMT = Math.max(...Object.values(mtCounts));
