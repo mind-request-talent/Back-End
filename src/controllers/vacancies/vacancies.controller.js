@@ -75,26 +75,16 @@ export async function allVacancies(req, res) {
 }
 
 export async function vacanciesSpecs(req, res) {
+    const vacancies = await prisma.vacancy.findMany({
+        select: {
+            main_tech: true,
+            second_tech: true,
+            vacancy_status: true,
+            experience_level: true,
+        }
+    });
 
-    try {
-
-        const vacancies = await prisma.vacancy.findMany({
-            select: {
-                main_tech: true,
-                second_tech: true,
-                vacancy_status: true,
-                experience_level: true,
-            }
-        });
-
-        if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
-
-    } catch (error) {
-
-        console.error(error.message);
-        return res.send('Ha ocurrido un error');
-
-    }
+    if (vacancies.length === 0) return res.status(404).send('No se encontraron vacantes');
 
     const taken = vacancies.filter(vacancies => { return vacancies.vacancy_status === 'TAKEN' });
     const available = vacancies.filter(vacancies => { return vacancies.vacancy_status === 'AVAILABLE' });
