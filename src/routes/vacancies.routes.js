@@ -4,8 +4,8 @@ const vacanciesRouter = express.Router();
 import * as vacanciesController from '../controllers/vacancies/vacancies.controller.js';
 
 vacanciesRouter.post('', vacanciesController.createVacancy);
+vacanciesRouter.post('/obtainData', vacanciesController.allVacancies);
 
-vacanciesRouter.get('', vacanciesController.allVacancies);
 vacanciesRouter.get('/specs', vacanciesController.vacanciesSpecs);
 vacanciesRouter.get('/:id', vacanciesController.vacancyById);
 
